@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-navbar color="secondary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Pedra Verde</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  
+    
+      <ion-item>
+        <ion-label stacked >Horas a Trabalhar</ion-label>
+        <ion-input [disabled]="isDisabled ? '' : null" type="text" [(ngModel)]="timeToWork"></ion-input>
+      </ion-item>
+    
+      <ion-item>
+        <ion-label stacked>Minutos de Tolerância</ion-label>
+        <ion-input [disabled]="isDisabled ? '' : null" type="text" [(ngModel)]="tolerance"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Hora Entrada</ion-label>
+        <!-- <ion-input type="text" [(ngModel)]="hourIn" (input)="calculate()"></ion-input> -->
+        <ion-datetime displayFormat="HH:mm" [(ngModel)]="hourIn" (ionChange)="calculate()"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked >8.8 De:</ion-label>
+        <ion-datetime displayFormat="HH:mm"  [disabled]="isDisabled ? '' : null" [(ngModel)]="hourOut1"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked >Até: </ion-label>
+        <ion-datetime displayFormat="HH:mm"  [disabled]="isDisabled ? '' : null" [(ngModel)]="hourOut2"></ion-datetime>
+      </ion-item>
+
+    
+
+
+</ion-content>

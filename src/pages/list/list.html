@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar color="secondary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Configuração</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-item>
+    <ion-label stacked >Horas a Trabalhar</ion-label>
+    <ion-datetime displayFormat="HH:mm" [(ngModel)]="timeToWork"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label stacked>Minutos de Tolerância</ion-label>
+    <ion-datetime displayFormat="HH:mm" [(ngModel)]="tolerance"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label stacked>Hora de Entrada Padrão</ion-label>
+    <ion-datetime displayFormat="HH:mm" [(ngModel)]="standardInHour"></ion-datetime>
+  </ion-item>
+  
+  <ion-item>
+    <button item-right ion-button outline color="secondary" (click)='showAlert()'>Gravar</button>
+  </ion-item>
+
+</ion-content>
