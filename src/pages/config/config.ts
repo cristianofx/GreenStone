@@ -4,6 +4,8 @@ import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HomePage } from "../home/home";
 
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
 
 @Component({
   selector: 'config-list',
@@ -17,7 +19,8 @@ export class ConfigPage {
   tolerance: string;
   standardInHour: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, public storage: Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, 
+              public storage: Storage, private localNotifications: LocalNotifications) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
@@ -84,9 +87,6 @@ export class ConfigPage {
 
     this.storage.get('timeToWork').then((val) => {
       console.log('The time is', val);
-
-      
-
     });
     
   }
