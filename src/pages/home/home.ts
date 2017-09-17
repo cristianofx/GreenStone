@@ -5,6 +5,7 @@ import { Storage } from '@ionic/storage';
 import * as moment from 'moment';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { Vibration } from '@ionic-native/vibration';
 
 @Component({
   selector: 'page-home',
@@ -20,7 +21,27 @@ export class HomePage {
   hourOut2: string = '';
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
-              , private localNotifications: LocalNotifications) {
+              , private localNotifications: LocalNotifications, private vibration: Vibration) {
+
+
+    let vib = this.vibration;
+
+    let alert = this.alertCtrl;
+
+    this.localNotifications.on('trigger', function(notification){ 
+      let alertMessage = alert.create({
+        title: 'Fim de Turno',
+        subTitle: 'Hora de ir para casa.',
+        buttons: ['OK']
+      });
+      alertMessage.present();
+      vib.vibrate([2000,1000,2000,1000,2000]);
+    });
+
+    this.localNotifications.on('click', function(){
+      vib.vibrate(0);
+    });
+
 
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
@@ -35,22 +56,26 @@ export class HomePage {
 
     this.hourIn = '08:00';
 
+    
+
   }
 
   calculate(){
     console.log('The time is', this.hourIn);
     this.storage.set('hourIn', this.hourIn);
 
-    let newDate = moment();
+    let momentDate = moment();
 
-    let out1 = newDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
+    let out1 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
     let timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
 
     let hourOut1local = out1.add(timeSpan, 'minutes').subtract(parseInt(this.tolerance.split(':')[1]), 'minutes');
 
     this.hourOut1 = hourOut1local.format('HH:mm');
 
-    let out2 = newDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
+    let hourOutDateObject = hourOut1local.toDate();
+
+    let out2 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
     timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
 
     let hourOut2local = out2.add(timeSpan, 'minutes').add(parseInt(this.tolerance.split(':')[1]), 'minutes');
@@ -58,14 +83,20 @@ export class HomePage {
     
     this.hourOut2 = hourOut2local.format('HH:mm');
 
-    // Schedule delayed notification
-    this.localNotifications.schedule({
-      text: 'Delayed ILocalNotification',
-      at: new Date(new Date().getTime() + 1000),
-      led: 'FF0000',
-      sound: null
-    });
 
+    this.localNotifications.clearAll();
+
+    if(hourOutDateObject > new Date()){
+    // Schedule delayed notification
+      this.localNotifications.schedule({
+        id: 1,
+        text: 'Fim do turno',
+        at: hourOutDateObject,
+        led: 'FF0000',
+        sound: null,
+        icon: "file://resources/android/icon/drawable-ldpi-icon.png"
+      });
+    }
   }
 
 }
