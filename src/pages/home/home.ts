@@ -29,13 +29,14 @@ export class HomePage {
     let alert = this.alertCtrl;
 
     this.localNotifications.on('trigger', function(notification){ 
+      setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000)
+      
       let alertMessage = alert.create({
         title: 'Fim de Turno',
         subTitle: 'Hora de ir para casa.',
         buttons: ['OK']
       });
       alertMessage.present();
-      vib.vibrate([2000,1000,2000,1000,2000]);
     });
 
     this.localNotifications.on('click', function(){
@@ -94,7 +95,7 @@ export class HomePage {
         at: hourOutDateObject,
         led: 'FF0000',
         sound: null,
-        icon: "file://resources/android/icon/drawable-ldpi-icon.png"
+        icon: "file://assets/icon/favicon.ico"
       });
     }
   }

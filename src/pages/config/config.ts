@@ -4,8 +4,6 @@ import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HomePage } from "../home/home";
 
-import { LocalNotifications } from '@ionic-native/local-notifications';
-
 
 @Component({
   selector: 'config-list',
@@ -20,7 +18,7 @@ export class ConfigPage {
   standardInHour: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, 
-              public storage: Storage, private localNotifications: LocalNotifications) {
+              public storage: Storage) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
