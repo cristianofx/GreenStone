@@ -99,4 +99,30 @@ export class HomePage {
     }
   }
 
+  clockIn(){
+    let alert = this.alertCtrl.create({
+      title: 'Confirmar entrada',
+      message: 'Confirmar início da contagem?',
+      buttons: [
+        {
+          text: 'Não',
+          role: 'cancel',
+          handler: () => {
+            //console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Sim',
+          handler: () => {
+            alert.present();
+            let momentDate = moment();
+            this.hourIn = momentDate.format('HH:mm');
+            this.calculate();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
 }

@@ -37,7 +37,9 @@
         <ion-datetime displayFormat="HH:mm"  [disabled]="isDisabled ? '' : null" [(ngModel)]="hourOut2"></ion-datetime>
       </ion-item>
 
-    
-
+      <ion-fab bottom right>
+        <button ion-fab (click)="clockIn()" color="secondary">Iniciar</button>
+      </ion-fab>
 
 </ion-content>
+
