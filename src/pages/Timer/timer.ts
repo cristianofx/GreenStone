@@ -1,6 +1,4 @@
 import {Component, Input} from '@angular/core';
-import {ITimer} from './itimer';
- 
  
 @Component({
     selector: 'timer',
@@ -35,11 +33,28 @@ export class TimerComponent {
  
         this.timer.displayTime = this.getSecondsAsDigitalClock(this.timer.secondsRemaining);
     }
+
+    resetTimer() {
+        if(!this.timeInSeconds) { this.timeInSeconds = 0; }
+ 
+        this.timer = <ITimer>{
+            seconds: this.timeInSeconds,
+            runTimer: this.timer.runTimer,
+            hasStarted: this.timer.hasStarted,
+            hasFinished: false,
+            secondsRemaining: this.timer.secondsRemaining
+        };
+ 
+        this.timer.displayTime = this.getSecondsAsDigitalClock(this.timer.secondsRemaining);
+        this.startTimer();
+    }
  
     startTimer() {
-        this.timer.hasStarted = true;
-        this.timer.runTimer = true;
-        this.timerTick();
+        if(this.timer.runTimer == false && this.timer.hasStarted == false){
+            this.timer.hasStarted = true;
+            this.timer.runTimer = true;
+            this.timerTick();
+        }
     }
  
     pauseTimer() {
@@ -60,6 +75,8 @@ export class TimerComponent {
             }
             else {
                 this.timer.hasFinished = true;
+                this.timer.runTimer = false;
+                this.timer.hasStarted = false;
             }
         }, 1000);
     }
@@ -77,5 +94,14 @@ export class TimerComponent {
         secondsString = (seconds < 10) ? "0" + seconds : seconds.toString();
         return hoursString + ':' + minutesString + ':' + secondsString;
     }
-    
+}
+
+
+export interface ITimer {
+    seconds: number;
+    secondsRemaining: number;
+    runTimer: boolean;
+    hasStarted: boolean;
+    hasFinished: boolean;
+    displayTime: string;
 }

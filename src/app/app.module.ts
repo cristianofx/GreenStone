@@ -18,9 +18,9 @@ import { Vibration } from '@ionic-native/vibration';
 @NgModule({
   declarations: [
     MyApp,
+    TimerComponent,
     HomePage,
-    ConfigPage,
-    TimerComponent 
+    ConfigPage
   ],
   imports: [
     BrowserModule,
@@ -31,7 +31,8 @@ import { Vibration } from '@ionic-native/vibration';
   entryComponents: [
     MyApp,
     HomePage,
-    ConfigPage
+    ConfigPage,
+    TimerComponent
   ],
   providers: [
     StatusBar,
