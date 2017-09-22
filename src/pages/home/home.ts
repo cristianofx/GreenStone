@@ -23,26 +23,7 @@ export class HomePage {
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
               , private localNotifications: LocalNotifications, private vibration: Vibration) {
 
-
-    let vib = this.vibration;
-
-    let alert = this.alertCtrl;
-
-    this.localNotifications.on('trigger', function(notification){ 
-      setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000)
-      
-      let alertMessage = alert.create({
-        title: 'Fim de Turno',
-        subTitle: 'Hora de ir para casa.',
-        buttons: ['OK']
-      });
-      alertMessage.present();
-    });
-
-    this.localNotifications.on('click', function(){
-      vib.vibrate(0);
-    });
-
+    this.setTriggerEvent();
 
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
@@ -87,6 +68,7 @@ export class HomePage {
 
     this.localNotifications.clearAll();
 
+
     if(hourOutDateObject > new Date()){
     // Schedule delayed notification
       this.localNotifications.schedule({
@@ -98,6 +80,26 @@ export class HomePage {
         icon: "file://assets/icon/favicon.ico"
       });
     }
+  }
+
+  setTriggerEvent(){
+    let vib = this.vibration;
+    let alert = this.alertCtrl;
+
+    this.localNotifications.on('trigger', function(notification){ 
+      setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000);
+      let alertMessage = alert.create({
+        title: 'Fim de Turno',
+        subTitle: 'Hora de ir para casa.',
+        buttons: ['OK']
+      });
+      alertMessage.present();
+      this.localNotifications.clearAll();
+    });
+
+    this.localNotifications.on('click', function(){
+      vib.vibrate(0);
+    });
   }
 
   clockIn(){
