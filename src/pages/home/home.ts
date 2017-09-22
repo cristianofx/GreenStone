@@ -24,7 +24,7 @@ export class HomePage {
   hourIn: string;
   hourOut1: string = '';
   hourOut2: string = '';
-  timeRemaining: number = 3;
+  timeRemaining: number;
   timerStarted: boolean = false;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
@@ -54,10 +54,9 @@ export class HomePage {
     let hourOut1local = out1.add(timeSpan, 'minutes').subtract(parseInt(this.tolerance.split(':')[1]), 'minutes');
     this.hourOut1 = hourOut1local.format('HH:mm');
 
-    if(this.timerStarted == true){
+
       let now = moment();
       this.resetTimer(hourOut1local.diff(now, 'seconds'));
-    }
 
     let hourOutDateObject = hourOut1local.toDate();
     let out2 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
