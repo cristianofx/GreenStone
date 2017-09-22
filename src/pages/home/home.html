@@ -37,6 +37,13 @@
         <ion-datetime displayFormat="HH:mm"  [disabled]="isDisabled ? '' : null" [(ngModel)]="hourOut2"></ion-datetime>
       </ion-item>
 
+      <div style="margin-top:10%">
+
+        <h4 style="margin-left:5%">Tempo Restante:</h4>
+        <timer  #timer [timeInSeconds]="timeRemaining" ></timer>
+
+      </div>
+
       <ion-fab bottom center >
         <button ion-fab (click)="clockIn()" color="secondary" style="margin-bottom:50%">Iniciar</button>
       </ion-fab>

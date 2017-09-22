@@ -7,11 +7,16 @@ import * as moment from 'moment';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Vibration } from '@ionic-native/vibration';
 
+import { ViewChild } from '@angular/core';
+import { TimerComponent } from '../timer/timer';
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
+
+  @ViewChild(TimerComponent) timer: TimerComponent;
 
   isDisabled = true;
   timeToWork: string;
@@ -19,6 +24,8 @@ export class HomePage {
   hourIn: string;
   hourOut1: string = '';
   hourOut2: string = '';
+  timeRemaining: number;
+  timerStarted: boolean = false;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
               , private localNotifications: LocalNotifications, private vibration: Vibration) {
@@ -35,11 +42,6 @@ export class HomePage {
         });
       });
     });
-
-    this.hourIn = '08:00';
-
-    
-
   }
 
   calculate(){
@@ -47,30 +49,25 @@ export class HomePage {
     this.storage.set('hourIn', this.hourIn);
 
     let momentDate = moment();
-
     let out1 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
     let timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
-
     let hourOut1local = out1.add(timeSpan, 'minutes').subtract(parseInt(this.tolerance.split(':')[1]), 'minutes');
-
     this.hourOut1 = hourOut1local.format('HH:mm');
 
-    let hourOutDateObject = hourOut1local.toDate();
+    let now = moment();
+    this.resetTimer(hourOut1local.diff(now, 'seconds'));
 
+    let hourOutDateObject = hourOut1local.toDate();
     let out2 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
     timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
-
     let hourOut2local = out2.add(timeSpan, 'minutes').add(parseInt(this.tolerance.split(':')[1]), 'minutes');
-
-    
     this.hourOut2 = hourOut2local.format('HH:mm');
-
-
     this.localNotifications.clearAll();
 
-
     if(hourOutDateObject > new Date()){
-    // Schedule delayed notification
+      this.startTimer();
+
+      // Schedule delayed notification
       this.localNotifications.schedule({
         id: 1,
         text: 'Fim do turno',
@@ -80,6 +77,18 @@ export class HomePage {
         icon: "file://assets/icon/favicon.ico"
       });
     }
+  }
+
+  startTimer(){
+    if(this.timerStarted != true){
+      this.timer.startTimer();
+      this.timerStarted = true;
+    }
+  }
+
+  resetTimer(diffSeconds: number){
+    this.timeRemaining = diffSeconds;
+    this.timer.timer.secondsRemaining = diffSeconds;
   }
 
   setTriggerEvent(){

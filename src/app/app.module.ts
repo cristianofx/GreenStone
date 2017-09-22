@@ -5,6 +5,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { ConfigPage } from '../pages/config/config';
+import { TimerComponent } from '../pages/timer/timer';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -13,11 +14,13 @@ import { IonicStorageModule } from '@ionic/storage';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { Vibration } from '@ionic-native/vibration';
 
+
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    ConfigPage
+    ConfigPage,
+    TimerComponent 
   ],
   imports: [
     BrowserModule,
