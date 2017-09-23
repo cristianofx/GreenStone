@@ -26,6 +26,7 @@ export class HomePage {
   hourOut2: string = '';
   timeRemaining: number;
   timerStarted: boolean = false;
+  started: boolean = false;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
               , private localNotifications: LocalNotifications, private vibration: Vibration) {
@@ -55,8 +56,8 @@ export class HomePage {
     this.hourOut1 = hourOut1local.format('HH:mm');
 
 
-      let now = moment();
-      this.resetTimer(hourOut1local.diff(now, 'seconds'));
+    let now = moment();
+    this.resetTimer(hourOut1local.diff(now, 'seconds'));
 
     let hourOutDateObject = hourOut1local.toDate();
     let out2 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
@@ -67,6 +68,7 @@ export class HomePage {
 
     if(hourOutDateObject > new Date()){
       this.startTimer();
+      this.started = true;
 
       // Schedule delayed notification
       this.localNotifications.schedule({
@@ -132,6 +134,32 @@ export class HomePage {
             let momentDate = moment();
             this.hourIn = momentDate.format('HH:mm');
             this.calculate();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  stopAll(){
+    let alert = this.alertCtrl.create({
+      title: 'Parar',
+      message: 'Desativar notificação?',
+      buttons: [
+        {
+          text: 'Não',
+          role: 'cancel',
+          handler: () => {
+            //console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Sim',
+          handler: () => {
+            alert.present();
+            this.localNotifications.clearAll();
+            this.resetTimer(0);
+            this.started = false;
           }
         }
       ]

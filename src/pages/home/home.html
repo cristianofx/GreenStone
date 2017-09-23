@@ -44,8 +44,12 @@
 
       </div>
 
-      <ion-fab bottom center >
+      <ion-fab bottom center *ngIf="!started">
         <button ion-fab (click)="clockIn()" color="secondary" style="margin-bottom:50%">Iniciar</button>
+      </ion-fab>
+
+      <ion-fab bottom center *ngIf="started">
+        <button ion-fab (click)="stopAll()" color="danger" style="margin-bottom:50%">Parar</button>
       </ion-fab>
 
 </ion-content>
