@@ -39,7 +39,10 @@ export class HomePage {
         this.tolerance = val || '';
         storage.get('hourIn').then((val) => {
           this.hourIn = val || '';
-          this.calculate();
+          storage.get('started').then((val) => {
+            this.started = val || false;
+            this.calculate();
+          });
         });
       });
     });
@@ -66,20 +69,32 @@ export class HomePage {
     this.hourOut2 = hourOut2local.format('HH:mm');
     this.localNotifications.clearAll();
 
-    if(hourOutDateObject > new Date()){
-      this.startTimer();
-      this.started = true;
+    this.storage.get('started').then((val) => {
+        this.started = val || false;
+        if(hourOutDateObject > new Date() && this.started){
+          this.startTimer();
+          this.started = true;
+          this.storage.set('started', true);
 
-      // Schedule delayed notification
-      this.localNotifications.schedule({
-        id: 1,
-        text: 'Fim do turno',
-        at: hourOutDateObject,
-        led: 'FF0000',
-        sound: null,
-        icon: "file://assets/icon/favicon.ico"
+          // Schedule delayed notification
+          this.localNotifications.schedule({
+            id: 1,
+            text: 'Fim do turno',
+            at: hourOutDateObject,
+            led: 'FF0000',
+            sound: null,
+            icon: "file://assets/icon/favicon.ico"
+          });
+        }
       });
-    }
+  }
+
+  onTimeChange(){
+    this.storage.set('started', true).then((val) => {
+      this.started = true;
+      this.calculate();
+    });
+    
   }
 
   startTimer(){
@@ -130,6 +145,7 @@ export class HomePage {
         {
           text: 'Sim',
           handler: () => {
+            this.storage.set('started', true);
             alert.present();
             let momentDate = moment();
             this.hourIn = momentDate.format('HH:mm');
@@ -160,6 +176,7 @@ export class HomePage {
             this.localNotifications.clearAll();
             this.resetTimer(0);
             this.started = false;
+            this.storage.set('started', false);
           }
         }
       ]
