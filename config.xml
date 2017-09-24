@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>GreenStone</name>
+<widget id="com.greenstone.greenstone" version="0.9.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Pedra Verde</name>
     <description>App to remind work leave time</description>
     <author email="cristianofx@gmail.com" href="http://ionicframework.com/">PinduCris LTDA</author>
-    <content original-src="index.html" src="http://192.168.1.108:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://ionic.local/*" />
     <allow-intent href="http://*/*" />
