@@ -9,6 +9,7 @@ import { TimerComponent } from '../pages/timer/timer';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { DatePicker } from '@ionic-native/date-picker';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { LocalNotifications } from '@ionic-native/local-notifications';
@@ -39,6 +40,7 @@ import { Vibration } from '@ionic-native/vibration';
     SplashScreen,
     LocalNotifications,
     Vibration,
+    DatePicker,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
