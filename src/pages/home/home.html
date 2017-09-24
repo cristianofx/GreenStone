@@ -37,7 +37,7 @@
         <ion-datetime displayFormat="HH:mm"  [disabled]="isDisabled ? '' : null" [(ngModel)]="hourOut2"></ion-datetime>
       </ion-item>
 
-      <div style="margin-top:10%">
+      <div style="margin-top:10%" [hidden]="!started">
 
         <h4 style="margin-left:5%">Tempo Restante:</h4>
         <timer  #timer [timeInSeconds]="timeRemaining" ></timer>
