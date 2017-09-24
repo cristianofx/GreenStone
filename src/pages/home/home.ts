@@ -5,6 +5,7 @@ import { Storage } from '@ionic/storage';
 import * as moment from 'moment';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { DatePicker } from '@ionic-native/date-picker';
 import { Vibration } from '@ionic-native/vibration';
 
 import { ViewChild } from '@angular/core';
@@ -29,7 +30,7 @@ export class HomePage {
   started: boolean = false;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
-              , private localNotifications: LocalNotifications, private vibration: Vibration) {
+              , private localNotifications: LocalNotifications, private vibration: Vibration, private datePicker: DatePicker) {
 
     this.setTriggerEvent();
 
@@ -46,6 +47,24 @@ export class HomePage {
         });
       });
     });
+  }
+
+  nativePicker(){
+    this.datePicker.show({
+      date: new Date(),
+      mode: 'time',
+      is24Hour: true,
+      androidTheme: this.datePicker.ANDROID_THEMES.THEME_DEVICE_DEFAULT_LIGHT
+    }).then(
+      date => {
+        let hourInPicker = moment(date);
+        this.hourIn = hourInPicker.format('HH:mm');
+        this.storage.set('hourIn', hourInPicker.format('HH:mm')).then((val) => {
+          this.onTimeChange();
+        });
+      },
+      err => console.log('Error occurred while getting date: ', err)
+    );
   }
 
   calculate(){

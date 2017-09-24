@@ -23,8 +23,8 @@
 
       <ion-item>
         <ion-label floating>Hora Entrada</ion-label>
-        <!-- <ion-input type="text" [(ngModel)]="hourIn" (input)="calculate()"></ion-input> -->
-        <ion-datetime displayFormat="HH:mm" [(ngModel)]="hourIn" (ionChange)="onTimeChange()"></ion-datetime>
+        <ion-input type="text" [readonly]="true" showWhen="android" [(ngModel)]="hourIn" (focus)="nativePicker()" (click)="nativePicker()"></ion-input>
+        <ion-datetime hideWhen="android" displayFormat="HH:mm" [(ngModel)]="hourIn" (ionChange)="onTimeChange()"></ion-datetime>
       </ion-item>
 
       <ion-item>
