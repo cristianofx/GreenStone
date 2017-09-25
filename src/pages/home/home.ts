@@ -32,7 +32,7 @@ export class HomePage {
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
               , private localNotifications: LocalNotifications, private vibration: Vibration, private datePicker: DatePicker) {
 
-    this.setTriggerEvent();
+    
 
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
@@ -40,6 +40,7 @@ export class HomePage {
         this.tolerance = val || '';
         storage.get('hourIn').then((val) => {
           this.hourIn = val || '';
+          this.setTriggerEvent();
           storage.get('started').then((val) => {
             this.started = val || false;
             this.calculate();
@@ -86,7 +87,7 @@ export class HomePage {
     timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
     let hourOut2local = out2.add(timeSpan, 'minutes').add(parseInt(this.tolerance.split(':')[1]), 'minutes');
     this.hourOut2 = hourOut2local.format('HH:mm');
-    this.localNotifications.clearAll();
+    this.localNotifications.cancelAll();
 
     this.storage.get('started').then((val) => {
         this.started = val || false;
@@ -132,21 +133,36 @@ export class HomePage {
   setTriggerEvent(){
     let vib = this.vibration;
     let alert = this.alertCtrl;
+    let home = this;
 
     this.localNotifications.on('trigger', function(notification){ 
       setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000);
       let alertMessage = alert.create({
         title: 'Fim de Turno',
         subTitle: 'Hora de ir para casa.',
-        buttons: ['OK']
+        buttons: [{
+          text: 'OK',
+          handler: () => {
+            alertMessage.dismiss().then(() => { 
+              vib.vibrate(0); 
+              home.localNotifications.clearAll(); 
+            });
+            return false;
+          }
+        }]
       });
       alertMessage.present();
-      this.localNotifications.clearAll();
+      home.clearNotification();
     });
 
     this.localNotifications.on('click', function(){
       vib.vibrate(0);
     });
+  }
+
+  clearNotification(){
+    this.started = false;
+    this.storage.set('started', false);
   }
 
   clockIn(){
@@ -192,7 +208,7 @@ export class HomePage {
           text: 'Sim',
           handler: () => {
             alert.present();
-            this.localNotifications.clearAll();
+            this.localNotifications.cancelAll();
             this.resetTimer(0);
             this.started = false;
             this.storage.set('started', false);
