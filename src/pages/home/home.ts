@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
+import { ConfigPage } from "../config/config";
 import * as moment from 'moment';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
@@ -25,29 +26,47 @@ export class HomePage {
   hourIn: string;
   hourOut1: string = '';
   hourOut2: string = '';
+  lunchTime: string;
   timeRemaining: number;
   timerStarted: boolean = false;
   started: boolean = false;
+  totalTime:string = '';
+  lastCallBackReceived: boolean = false;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
               , private localNotifications: LocalNotifications, private vibration: Vibration, private datePicker: DatePicker) {
 
     
-
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
-      storage.get('tolerance').then((val) => {
-        this.tolerance = val || '';
-        storage.get('hourIn').then((val) => {
-          this.hourIn = val || '';
-          this.setTriggerEvent();
-          storage.get('started').then((val) => {
-            this.started = val || false;
-            this.calculate();
+      storage.get('lunchTime').then((val) => {
+        this.lunchTime = val ||'';
+        this.setTotalTime();
+        storage.get('tolerance').then((val) => {
+          this.tolerance = val || '';
+          storage.get('hourIn').then((val) => {
+            this.hourIn = val || '';
+            this.setTriggerEvent();
+            storage.get('started').then((val) => {
+              this.started = val || false;
+              this.lastCallBackReceived = true;
+              this.calculate();
+            });
           });
         });
       });
     });
+  }
+
+  goToConfig(){
+    this.navCtrl.setRoot(ConfigPage);
+  }
+
+  setTotalTime(){
+    let lunchMinutes = (60 * (parseInt(this.lunchTime.split(':')[0]))) + (parseInt(this.lunchTime.split(':')[1]));
+    let momentDate = moment();
+    let total = momentDate.second(0).minute(parseInt(this.timeToWork.split(':')[1])).hour(parseInt(this.timeToWork.split(':')[0])).add(lunchMinutes, 'minutes');
+    this.totalTime = total.format('HH:mm')
   }
 
   nativePicker(){
@@ -69,12 +88,12 @@ export class HomePage {
   }
 
   calculate(){
-    console.log('The time is', this.hourIn);
     this.storage.set('hourIn', this.hourIn);
 
     let momentDate = moment();
     let out1 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
-    let timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
+    let lunchMinutes = (60 * (parseInt(this.lunchTime.split(':')[0]))) + (parseInt(this.lunchTime.split(':')[1]));
+    let timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1])) + lunchMinutes;
     let hourOut1local = out1.add(timeSpan, 'minutes').subtract(parseInt(this.tolerance.split(':')[1]), 'minutes');
     this.hourOut1 = hourOut1local.format('HH:mm');
 
@@ -180,11 +199,13 @@ export class HomePage {
         {
           text: 'Sim',
           handler: () => {
-            this.storage.set('started', true);
+            this.storage.set('started', true).then((val) => {
+              this.started = true;
+              let momentDate = moment();
+              this.hourIn = momentDate.format('HH:mm');
+              this.calculate();
+            });
             alert.present();
-            let momentDate = moment();
-            this.hourIn = momentDate.format('HH:mm');
-            this.calculate();
           }
         }
       ]
