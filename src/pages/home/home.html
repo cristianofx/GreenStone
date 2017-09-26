@@ -13,7 +13,7 @@
     
       <ion-item>
         <ion-label stacked >Horas a Trabalhar</ion-label>
-        <ion-input [disabled]="isDisabled ? '' : null" type="text" [(ngModel)]="timeToWork"></ion-input>
+        <ion-input [disabled]="isDisabled ? '' : null" type="text" [(ngModel)]="totalTime"></ion-input>
       </ion-item>
     
       <ion-item>
@@ -44,12 +44,16 @@
 
       </div>
 
-      <ion-fab bottom center *ngIf="!started">
-        <button ion-fab (click)="clockIn()" color="secondary" style="margin-bottom:50%">Iniciar</button>
+      <ion-fab bottom right *ngIf="!started && lastCallBackReceived">
+        <button ion-fab (click)="clockIn()" color="secondary" style="margin-bottom:50%; margin-right:4mm">Iniciar</button>
       </ion-fab>
 
-      <ion-fab bottom center *ngIf="started">
-        <button ion-fab (click)="stopAll()" color="danger" style="margin-bottom:50%">Parar</button>
+      <ion-fab bottom right *ngIf="started && lastCallBackReceived">
+        <button ion-fab mini (click)="stopAll()" color="danger" style="margin-bottom:50%; margin-right:4mm">Parar</button>
+      </ion-fab>
+
+      <ion-fab bottom center *ngIf="(timeToWork == '' || lunchTime == '') && lastCallBackReceived">
+        <button ion-fab (click)="goToConfig()" color="warning" style="margin-bottom:50%; width:80px; height: 80px">Configurar</button>
       </ion-fab>
 
 </ion-content>

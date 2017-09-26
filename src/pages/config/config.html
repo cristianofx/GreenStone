@@ -10,7 +10,14 @@
 <ion-content padding>
   <ion-item>
     <ion-label stacked >Horas a Trabalhar</ion-label>
-    <ion-datetime displayFormat="HH:mm" [(ngModel)]="timeToWork"></ion-datetime>
+    <ion-input type="text" [readonly]="true" showWhen="android" [(ngModel)]="timeToWork" (focus)="nativePicker('timeToWork')" (click)="nativePicker('timeToWork')"></ion-input>
+    <ion-datetime hideWhen="android" displayFormat="HH:mm" [(ngModel)]="timeToWork"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label stacked >Tempo de Almoço</ion-label>
+    <ion-input type="text" [readonly]="true" showWhen="android" [(ngModel)]="lunchTime" (focus)="nativePicker('lunchTime')" (click)="nativePicker('lunchTime')"></ion-input>
+    <ion-datetime hideWhen="android" displayFormat="HH:mm" [(ngModel)]="lunchTime"></ion-datetime>
   </ion-item>
 
   <ion-item>
