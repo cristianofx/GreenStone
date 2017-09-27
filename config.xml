@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.greenstone.greenstone" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.greenstonedev.greenstone" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Pedra Verde</name>
     <description>App to remind work leave time</description>
     <author email="cristianofx@gmail.com" href="http://ionicframework.com/">PinduCris LTDA</author>
