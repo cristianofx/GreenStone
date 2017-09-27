@@ -11,6 +11,7 @@ import { Vibration } from '@ionic-native/vibration';
 
 import { ViewChild } from '@angular/core';
 import { TimerComponent } from '../timer/timer';
+import { Platform } from 'ionic-angular';
 
 @Component({
   selector: 'page-home',
@@ -34,9 +35,14 @@ export class HomePage {
   lastCallBackReceived: boolean = false;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
-              , private localNotifications: LocalNotifications, private vibration: Vibration, private datePicker: DatePicker) {
+              , private localNotifications: LocalNotifications, private vibration: Vibration, private datePicker: DatePicker, private platform: Platform) {
 
-    
+    let store = this.storage;
+    platform.ready().then(() => {
+      this.platform.pause.subscribe(() => {
+        store.set('navigation', false)
+    })});
+
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
       storage.get('lunchTime').then((val) => {
@@ -46,7 +52,13 @@ export class HomePage {
           this.tolerance = val || '';
           storage.get('hourIn').then((val) => {
             this.hourIn = val || '';
-            this.setTriggerEvent();
+            storage.get('navigation').then((val) => {
+              if(!val){
+                this.storage.set('navigation', true).then(() => {
+                  this.setTriggerEvent();
+                });
+              }
+            });
             storage.get('started').then((val) => {
               this.started = val || false;
               this.lastCallBackReceived = true;
@@ -63,10 +75,12 @@ export class HomePage {
   }
 
   setTotalTime(){
-    let lunchMinutes = (60 * (parseInt(this.lunchTime.split(':')[0]))) + (parseInt(this.lunchTime.split(':')[1]));
-    let momentDate = moment();
-    let total = momentDate.second(0).minute(parseInt(this.timeToWork.split(':')[1])).hour(parseInt(this.timeToWork.split(':')[0])).add(lunchMinutes, 'minutes');
-    this.totalTime = total.format('HH:mm')
+    if(this.timeToWork != '' && this.lunchTime != ''){
+      let lunchMinutes = (60 * (parseInt(this.lunchTime.split(':')[0]))) + (parseInt(this.lunchTime.split(':')[1]));
+      let momentDate = moment();
+      let total = momentDate.second(0).minute(parseInt(this.timeToWork.split(':')[1])).hour(parseInt(this.timeToWork.split(':')[0])).add(lunchMinutes, 'minutes');
+      this.totalTime = total.format('HH:mm')
+    }
   }
 
   nativePicker(){
@@ -125,6 +139,9 @@ export class HomePage {
             icon: "file://assets/icon/favicon.ico"
           });
         }
+        else{
+          this.schedulerStopped();
+        }
       });
   }
 
@@ -152,10 +169,9 @@ export class HomePage {
   setTriggerEvent(){
     let vib = this.vibration;
     let alert = this.alertCtrl;
-    let home = this;
+    var homeThis = this;
 
     this.localNotifications.on('trigger', function(notification){ 
-      setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000);
       let alertMessage = alert.create({
         title: 'Fim de Turno',
         subTitle: 'Hora de ir para casa.',
@@ -164,14 +180,24 @@ export class HomePage {
           handler: () => {
             alertMessage.dismiss().then(() => { 
               vib.vibrate(0); 
-              home.localNotifications.clearAll(); 
+              homeThis.localNotifications.clearAll(); 
+              homeThis.schedulerStopped();
+              this.started = false;
+              homeThis["started"] = false;
+              homeThis.started = false;
             });
             return false;
           }
         }]
       });
       alertMessage.present();
-      home.clearNotification();
+      setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000);
+      homeThis.schedulerStopped();
+      homeThis.storage.set('started', false).then((val) => {
+        this.started = false;
+        homeThis["started"] = false;
+        homeThis.started = false;
+      });
     });
 
     this.localNotifications.on('click', function(){
@@ -179,7 +205,7 @@ export class HomePage {
     });
   }
 
-  clearNotification(){
+  schedulerStopped(){
     this.started = false;
     this.storage.set('started', false);
   }
