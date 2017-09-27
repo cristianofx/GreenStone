@@ -44,7 +44,7 @@
 
       </div>
 
-      <ion-fab bottom right *ngIf="!started && lastCallBackReceived">
+      <ion-fab bottom right *ngIf="!started && lastCallBackReceived && !(timeToWork == '' || lunchTime == '')">
         <button ion-fab (click)="clockIn()" color="secondary" style="margin-bottom:50%; margin-right:4mm">Iniciar</button>
       </ion-fab>
 

@@ -16,13 +16,14 @@ export class ConfigPage {
   selectedItem: any;
   icons: string[];
   items: Array<{title: string, note: string, icon: string}>;
-  timeToWork: string;
-  tolerance: string;
-  standardInHour: string;
-  lunchTime: string;
+  timeToWork: string = '';
+  tolerance: string = '';
+  lunchTime: string = '';
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public alertCtrl: AlertController, 
               public storage: Storage, private datePicker: DatePicker) {
+
+    this.storage.set('navigation', true);
 
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
@@ -35,27 +36,33 @@ export class ConfigPage {
     storage.get('tolerance').then((val) => {
       this.tolerance = val || '';
     });
-
-    storage.get('standardInHour').then((val) => {
-      this.standardInHour = val || '';
-    });
   }
 
   showAlert() {
 
-    this.storage.set('lunchTime', this.lunchTime);
-    this.storage.set('timeToWork', this.timeToWork);
-    this.storage.set('tolerance', this.tolerance);
-    this.storage.set('standardInHour', this.standardInHour);
+    if(this.timeToWork != '' && this.lunchTime != '' && this.tolerance != ''){
 
-    let alert = this.alertCtrl.create({
-      title: 'Registrado',
-      subTitle: 'Configuração salva',
-      buttons: ['OK']
-    });
-    alert.present();
+      this.storage.set('lunchTime', this.lunchTime);
+      this.storage.set('timeToWork', this.timeToWork);
+      this.storage.set('tolerance', this.tolerance);
 
-    this.navCtrl.setRoot(HomePage);
+      let alert = this.alertCtrl.create({
+        title: 'Registrado',
+        subTitle: 'Configuração salva',
+        buttons: ['OK']
+      });
+      alert.present();
+
+      this.navCtrl.setRoot(HomePage);
+    }
+    else{
+      let alert = this.alertCtrl.create({
+        title: '',
+        subTitle: 'Por favor, preencha todos os campos.',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
   }
 
   nativePicker(field: string){
