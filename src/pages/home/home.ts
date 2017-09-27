@@ -108,7 +108,8 @@ export class HomePage {
     let out1 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
     let lunchMinutes = (60 * (parseInt(this.lunchTime.split(':')[0]))) + (parseInt(this.lunchTime.split(':')[1]));
     let timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1])) + lunchMinutes;
-    let hourOut1local = out1.add(timeSpan, 'minutes').subtract(parseInt(this.tolerance.split(':')[1]), 'minutes');
+    let toleranceCalculated = (60 * (parseInt(this.tolerance.split(':')[0]))) + (parseInt(this.tolerance.split(':')[1]));
+    let hourOut1local = out1.add(timeSpan, 'minutes').subtract(toleranceCalculated, 'minutes');
     this.hourOut1 = hourOut1local.format('HH:mm');
 
 
@@ -117,8 +118,8 @@ export class HomePage {
 
     let hourOutDateObject = hourOut1local.toDate();
     let out2 = momentDate.second(0).minute(parseInt(this.hourIn.split(':')[1])).hour(parseInt(this.hourIn.split(':')[0]));
-    timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1]));
-    let hourOut2local = out2.add(timeSpan, 'minutes').add(parseInt(this.tolerance.split(':')[1]), 'minutes');
+    timeSpan = (60 * (parseInt(this.timeToWork.split(':')[0]))) + (parseInt(this.timeToWork.split(':')[1])) + lunchMinutes;
+    let hourOut2local = out2.add(timeSpan, 'minutes').add(toleranceCalculated, 'minutes');
     this.hourOut2 = hourOut2local.format('HH:mm');
     this.localNotifications.cancelAll();
 
