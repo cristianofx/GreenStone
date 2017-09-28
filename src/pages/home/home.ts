@@ -43,7 +43,7 @@ export class HomePage {
         store.set('navigation', false)
     })});
 
-    let returnedAll = new CallbackReturn();
+    let returnedAll = new CallbackReturnSemaphore();
 
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
@@ -291,7 +291,7 @@ export class HomePage {
 
 }
 
-class CallbackReturn {
+class CallbackReturnSemaphore {
   public timeToWork: boolean;
   public tolerance: boolean;
   public hourIn: boolean;
