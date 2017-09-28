@@ -43,35 +43,56 @@ export class HomePage {
         store.set('navigation', false)
     })});
 
+    let returnedAll = new CallbackReturnSemaphore();
+
     storage.get('timeToWork').then((val) => {
       this.timeToWork = val || '';
-      storage.get('lunchTime').then((val) => {
-        this.lunchTime = val ||'';
-        this.setTotalTime();
-        storage.get('tolerance').then((val) => {
-          this.tolerance = val || '';
-          storage.get('hourIn').then((val) => {
-            this.hourIn = val || '';
-            storage.get('navigation').then((val) => {
-              if(!val){
-                this.storage.set('navigation', true).then(() => {
-                  this.setTriggerEvent();
-                });
-              }
-            });
-            storage.get('started').then((val) => {
-              this.started = val || false;
-              this.lastCallBackReceived = true;
-              this.calculate();
-            });
-          });
+      returnedAll.timeToWork = true;
+      if(returnedAll.isAllReturned())
+        this.checkStarted();
+    });
+
+    storage.get('lunchTime').then((val) => {
+      this.lunchTime = val || '';
+      returnedAll.lunchTime = true;
+      if(returnedAll.isAllReturned())
+        this.checkStarted();
+    });
+
+    storage.get('tolerance').then((val) => {
+      this.tolerance = val || '';
+      returnedAll.tolerance = true;
+      if(returnedAll.isAllReturned())
+        this.checkStarted();
+    });
+
+    storage.get('hourIn').then((val) => {
+      this.hourIn = val || '';
+      returnedAll.hourIn = true;
+      if(returnedAll.isAllReturned())
+        this.checkStarted();
+    });
+
+    storage.get('navigation').then((val) => {
+      if(!val){
+        this.storage.set('navigation', true).then(() => {
+          this.setTriggerEvent();
         });
-      });
+      }
     });
   }
 
   goToConfig(){
     this.navCtrl.setRoot(ConfigPage);
+  }
+
+  checkStarted(){
+    let store = this.storage;
+    store.get('started').then((val) => {
+      this.started = val || false;
+      this.lastCallBackReceived = true;
+      this.calculate();
+    });
   }
 
   setTotalTime(){
@@ -102,6 +123,7 @@ export class HomePage {
   }
 
   calculate(){
+    this.setTotalTime();
     this.storage.set('hourIn', this.hourIn);
 
     let momentDate = moment();
@@ -136,7 +158,6 @@ export class HomePage {
             text: 'Fim do turno',
             at: hourOutDateObject,
             led: 'FF0000',
-            sound: null,
             icon: "file://assets/icon/favicon.ico"
           });
         }
@@ -267,4 +288,21 @@ export class HomePage {
     alert.present();
   }
 
+}
+
+class CallbackReturnSemaphore {
+  public timeToWork: boolean;
+  public tolerance: boolean;
+  public hourIn: boolean;
+  public lunchTime: boolean;
+
+  constructor() {
+      
+  }
+  isAllReturned() {
+      if(this.timeToWork && this.tolerance && this.hourIn && this.lunchTime)
+        return true;
+      else
+        return false
+  }
 }

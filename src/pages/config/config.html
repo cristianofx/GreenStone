@@ -21,7 +21,7 @@
   </ion-item>
 
   <ion-item>
-    <ion-label stacked>Minutos de Tolerância</ion-label>
+    <ion-label stacked>Tempo de Tolerância</ion-label>
     <ion-input type="text" [readonly]="true" showWhen="android" [(ngModel)]="tolerance" (ionFocus)="nativePicker('tolerance')" (click)="nativePicker('tolerance')"></ion-input>
     <ion-datetime hideWhen="android" displayFormat="HH:mm" [(ngModel)]="tolerance"></ion-datetime>
   </ion-item>
