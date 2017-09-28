@@ -158,7 +158,6 @@ export class HomePage {
             text: 'Fim do turno',
             at: hourOutDateObject,
             led: 'FF0000',
-            sound: null,
             icon: "file://assets/icon/favicon.ico"
           });
         }
