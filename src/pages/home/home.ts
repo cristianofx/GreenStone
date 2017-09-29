@@ -37,12 +37,6 @@ export class HomePage {
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public storage: Storage
               , private localNotifications: LocalNotifications, private vibration: Vibration, private datePicker: DatePicker, private platform: Platform) {
 
-    let store = this.storage;
-    platform.ready().then(() => {
-      this.platform.pause.subscribe(() => {
-        store.set('navigation', false)
-    })});
-
     let returnedAll = new CallbackReturnSemaphore();
 
     storage.get('timeToWork').then((val) => {
@@ -77,9 +71,34 @@ export class HomePage {
       if(!val){
         this.storage.set('navigation', true).then(() => {
           this.setTriggerEvent();
+          this.setResumePauseEvents();
         });
       }
     });
+  }
+
+  ionViewDidLoad() {
+    //view load event
+  }
+
+  ngOnInit() { 
+    //android lifecycle hook
+  }
+
+  setResumePauseEvents() { 
+    this.platform.ready().then(() => {
+      let store = this.storage;
+      this.platform.pause.subscribe(() => {
+        store.set('navigation', false)
+      });
+      this.platform.resume.subscribe(() => {
+        this.checkStarted();
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    //android lifecycle hook
   }
 
   goToConfig(){
@@ -134,7 +153,6 @@ export class HomePage {
     let hourOut1local = out1.add(timeSpan, 'minutes').subtract(toleranceCalculated, 'minutes');
     this.hourOut1 = hourOut1local.format('HH:mm');
 
-
     let now = moment();
     this.resetTimer(hourOut1local.diff(now, 'seconds'));
 
@@ -145,12 +163,11 @@ export class HomePage {
     this.hourOut2 = hourOut2local.format('HH:mm');
     this.localNotifications.cancelAll();
 
-    this.storage.get('started').then((val) => {
-        this.started = val || false;
-        if(hourOutDateObject > new Date() && this.started){
-          this.startTimer();
+    this.storage.get('started').then((isStarted) => {
+        if(hourOutDateObject > new Date() && isStarted){
           this.started = true;
           this.storage.set('started', true);
+          this.startTimer();
 
           // Schedule delayed notification
           this.localNotifications.schedule({
@@ -194,6 +211,13 @@ export class HomePage {
     var homeThis = this;
 
     this.localNotifications.on('trigger', function(notification){ 
+      homeThis.schedulerStopped();
+      this.started = false;
+      homeThis.storage.set('started', false).then((val) => {
+        this.started = false;
+        homeThis["started"] = false;
+        homeThis.started = false;
+      });
       let alertMessage = alert.create({
         title: 'Fim de Turno',
         subTitle: 'Hora de ir para casa.',
@@ -202,9 +226,9 @@ export class HomePage {
           handler: () => {
             alertMessage.dismiss().then(() => { 
               vib.vibrate(0); 
+              this.started = false;
               homeThis.localNotifications.clearAll(); 
               homeThis.schedulerStopped();
-              this.started = false;
               homeThis["started"] = false;
               homeThis.started = false;
             });
@@ -213,8 +237,11 @@ export class HomePage {
         }]
       });
       alertMessage.present();
-      setTimeout(() => vib.vibrate([2000,1000,2000,1000,2000]), 2000);
+      setTimeout(() => {
+         vib.vibrate([2000,1000,2000,1000,2000]); 
+      }, 1000);
       homeThis.schedulerStopped();
+      this.started = false;
       homeThis.storage.set('started', false).then((val) => {
         this.started = false;
         homeThis["started"] = false;
@@ -287,7 +314,6 @@ export class HomePage {
     });
     alert.present();
   }
-
 }
 
 class CallbackReturnSemaphore {
